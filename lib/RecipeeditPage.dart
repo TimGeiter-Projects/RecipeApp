@@ -59,15 +59,15 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
 
     // Ein neues Recipe-Objekt mit den aktualisierten Werten erstellen
     final updatedRecipe = Recipe(
-      id: widget.recipe.id, // Die ID bleibt gleich
+      id: widget.recipe.id,
       title: _titleController.text.trim(),
       ingredients: updatedIngredients,
       directions: updatedDirections,
       usedIngredients: updatedUsedIngredients,
-      savedAt: widget.recipe.savedAt, // Das Speicherdatum bleibt ebenfalls gleich
+      savedAt: widget.recipe.savedAt,
     );
 
-    // Das aktualisierte Rezept an die vorherige Seite zurückgeben
+
     Navigator.pop(context, updatedRecipe);
   }
 
@@ -114,7 +114,6 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
               keyboardType: TextInputType.multiline, // Tastaturtyp für mehrere Zeilen
             ),
             const SizedBox(height: 16),
-            // Textfeld für Anweisungen (mehrzeilig)
             TextFormField(
               controller: _directionsController,
               decoration: const InputDecoration(
@@ -126,7 +125,7 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
               keyboardType: TextInputType.multiline,
             ),
             const SizedBox(height: 16),
-            // Textfeld für verwendete Zutaten (KI-Generierung, mehrzeilig)
+
             TextFormField(
               controller: _usedIngredientsController,
               decoration: const InputDecoration(
@@ -136,11 +135,9 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
               ),
               maxLines: null,
               keyboardType: TextInputType.multiline,
-              // Kann bearbeitet werden, auch wenn KI-generiert
               enabled: true,
             ),
             const SizedBox(height: 24),
-            // Zentrierter Speichern-Button am unteren Rand
             Center(
               child: ElevatedButton.icon(
                 onPressed: _saveRecipe,
@@ -162,50 +159,3 @@ class _RecipeEditPageState extends State<RecipeEditPage> {
   }
 }
 
-// ANNAHME: Das Recipe-Modell ist in 'data/recipe.dart' definiert und enthält
-// die toJson() und fromJson() Methoden sowie die Felder:
-// id, title, ingredients, directions, usedIngredients, savedAt.
-// Ein Beispiel-Modell könnte so aussehen:
-/*
-import 'package:flutter/foundation.dart';
-
-class Recipe {
-  final String id;
-  String title;
-  List<String> ingredients;
-  List<String> directions;
-  List<String> usedIngredients;
-  DateTime savedAt;
-
-  Recipe({
-    required this.id,
-    required this.title,
-    required this.ingredients,
-    required this.directions,
-    required this.usedIngredients,
-    required this.savedAt,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'title': title,
-      'ingredients': ingredients,
-      'directions': directions,
-      'usedIngredients': usedIngredients,
-      'savedAt': savedAt.toIso8601String(),
-    };
-  }
-
-  factory Recipe.fromJson(Map<String, dynamic> json) {
-    return Recipe(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      ingredients: List<String>.from(json['ingredients'] as List),
-      directions: List<String>.from(json['directions'] as List),
-      usedIngredients: List<String>.from(json['usedIngredients'] as List),
-      savedAt: DateTime.parse(json['savedAt'] as String),
-    );
-  }
-}
-*/

@@ -9,7 +9,6 @@ class RecipeService {
 
   Future<Map<String, dynamic>> generateRecipe({
     required List<String> requiredIngredients,
-    // NEU: fullAvailableIngredients enthält die detaillierten IngredientEntry-Objekte
     required Map<String, List<IngredientEntry>> fullAvailableIngredients,
     bool autoExpandIngredients = true, // Wird in der RecipePage verwendet, nicht direkt an die API gesendet
   }) async {
@@ -30,7 +29,7 @@ class RecipeService {
 
     final payload = {
       'required_ingredients': requiredIngredients,
-      'available_ingredients': availableIngredientsWithDetails, // HIER ist die neue Struktur!
+      'available_ingredients': availableIngredientsWithDetails,
       'max_ingredients': 7,
       'max_retries': 5,
     };

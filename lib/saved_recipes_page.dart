@@ -897,7 +897,7 @@ class _SavedRecipesPageState extends State<SavedRecipesPage> with WidgetsBinding
                                         : null,
                                     icon: const Icon(Icons.remove_shopping_cart),
                                     label: const Text(
-                                      'Deduct used ingredients from inventory',
+                                      'Deduct used ingredients',
                                       style: TextStyle(fontSize: 16),
                                     ),
                                     style: ElevatedButton.styleFrom(

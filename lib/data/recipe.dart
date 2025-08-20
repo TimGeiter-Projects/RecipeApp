@@ -17,7 +17,6 @@ class Recipe {
     required this.savedAt,
   });
 
-  // Factory constructor to create a Recipe object from a JSON map
   factory Recipe.fromJson(Map<String, dynamic> json) {
     return Recipe(
       id: json['id'] as String,
@@ -29,7 +28,6 @@ class Recipe {
     );
   }
 
-  // Method to convert a Recipe object to a JSON-compatible map
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -37,11 +35,10 @@ class Recipe {
       'ingredients': ingredients,
       'directions': directions,
       'used_ingredients': usedIngredients,
-      'saved_at': savedAt.toIso8601String(), // Save date as ISO string
+      'saved_at': savedAt.toIso8601String(),
     };
   }
 
-  // Create a copy of the recipe, optionally with new values
   Recipe copyWith({
     String? id,
     String? title,

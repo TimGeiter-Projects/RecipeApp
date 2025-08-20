@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart'; // Nur für DateTime falls nicht anderswo importiert
 import 'package:equatable/equatable.dart'; // NEU: Importiere Equatable
 
-class IngredientEntry extends Equatable { // NEU: Erbe von Equatable
+class IngredientEntry extends Equatable {
   final String name;
   final DateTime dateAdded;
   final String category;
   final String unit;
-  double quantity; // KEIN final mehr: Feld für die Menge kann jetzt geändert werden
+  double quantity;
 
   IngredientEntry({
     required this.name,

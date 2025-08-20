@@ -241,9 +241,7 @@ class InventoryService {
     print("InventoryService: Deducted $amountToDeduct from $ingredientName. Remaining total: ${targetMap[ingredientName]?.fold(0.0, (sum, e) => sum + e.quantity) ?? 0.0} ${entries.first.unit}");
   }
 
-  // NEUE/ANGEPASSTE Methode: updateIngredientEntryQuantity
-  // Aktualisiert die Menge eines *spezifischen* IngredientEntry-Objekts.
-  // Diese Methode findet den Eintrag über seine Eigenschaften und aktualisiert ihn.
+
   Future<void> updateIngredientEntryQuantity(String ingredientKey, String categoryMapKey, IngredientEntry originalEntry, double newQuantity) async {
     Map<String, List<IngredientEntry>> targetMap = _getTargetMap(categoryMapKey);
     List<IngredientEntry>? entries = targetMap[ingredientKey];
@@ -253,19 +251,16 @@ class InventoryService {
       return;
     }
 
-    // Finde den exakten Eintrag basierend auf seinen Eigenschaften
     int indexToUpdate = entries.indexWhere((entry) =>
     entry.name == originalEntry.name &&
-        entry.dateAdded == originalEntry.dateAdded && // Exakter Zeitstempelvergleich
+        entry.dateAdded == originalEntry.dateAdded &&
         entry.unit == originalEntry.unit &&
-        entry.quantity == originalEntry.quantity); // Vergleiche auch die ursprüngliche Menge
-
+        entry.quantity == originalEntry.quantity);
     if (indexToUpdate != -1) {
       if (newQuantity <= 0) {
-        // Entferne den Eintrag, wenn die neue Menge <= 0 ist
         entries.removeAt(indexToUpdate);
         if (entries.isEmpty) {
-          targetMap.remove(ingredientKey); // Wenn die Liste leer ist, entferne den Schlüssel
+          targetMap.remove(ingredientKey);
         }
         print("InventoryService: Removed entry for $ingredientKey (quantity <= 0).");
       } else {
@@ -275,10 +270,7 @@ class InventoryService {
       }
 
       await saveInventory();
-      // Bei Aktualisierung eines spezifischen Eintrags ändern wir `_lastUsedUnits` nicht,
-      // da dies die Aggregation der Vorschläge verfälschen könnte.
-      // `_lastUsedUnits` wird nur beim Hinzufügen (addIngredient) aktualisiert.
-      // await saveLastUsedUnits(); // Dies ist hier nicht nötig/gewünscht
+
     } else {
       print("InventoryService: Original entry not found for update for $ingredientKey. May have been modified or deleted elsewhere.");
     }

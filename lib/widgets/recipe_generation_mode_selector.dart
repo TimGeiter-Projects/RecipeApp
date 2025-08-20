@@ -77,7 +77,7 @@ class _InitialSelectionBody extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 18),
               ),
               child: const Text(
-                'specialized model: T5',
+                'Chef Transformer T5',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
@@ -96,7 +96,7 @@ class _InitialSelectionBody extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 18),
               ),
               child: const Text(
-                'General model: Qwen/Qwen2.5-VL-72B-Instruct',
+                'Qwen2.5-VL-72B-Instruct',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),

@@ -35,11 +35,10 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // List of widgets for the bottom navigation bar
-  // The 'Rezepte' tab now uses RecipeGenerationModeSelector
+
   final List<Widget> _pages = [
     const IngredientsPage(),
-    const RecipeGenerationModeSelector(), // Use the new selector for the 'Rezepte' tab
+    const RecipeGenerationModeSelector(),
     const SavedRecipesPage(),
   ];
 
@@ -52,7 +51,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], // Display the selected page from the list
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
@@ -74,7 +73,7 @@ class _MainScreenState extends State<MainScreen> {
         currentIndex: _selectedIndex,
         selectedItemColor: Theme.of(context).colorScheme.primary,
         onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed, // Ensures all items are visible
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }

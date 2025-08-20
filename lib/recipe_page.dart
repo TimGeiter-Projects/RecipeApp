@@ -11,34 +11,29 @@ import 'data/IngriedientEntry.dart';
 import 'services/inventory_service.dart';
 
 class RecipePage extends StatefulWidget {
-  // NEU: Hinzufügen eines Callbacks für den Zurück-Button
   final VoidCallback? onBackToSelector;
 
-  const RecipePage({super.key, this.onBackToSelector}); // Aktualisierter Konstruktor
+  const RecipePage({super.key, this.onBackToSelector});
 
   @override
   State<RecipePage> createState() => _RecipePageState();
 }
 
 class _RecipePageState extends State<RecipePage> with WidgetsBindingObserver {
-  // ... (bestehender Code) ...
 
   // Services
   final RecipeService _recipeService = RecipeService();
   final InventoryService _inventoryService = InventoryService();
 
-  // Recipe Data & Loading State
   Map<String, dynamic> _recipeData = {};
   bool _isLoading = false;
   bool _isCurrentRecipeSaved = false;
 
-  // Inventory Maps
   Map<String, List<IngredientEntry>> _vegetablesMap = {};
   Map<String, List<IngredientEntry>> _mainIngredientsMap = {};
   Map<String, List<IngredientEntry>> _spicesMap = {};
   Map<String, List<IngredientEntry>> _othersMap = {};
 
-  // Ingredient Selection State
   Set<String> _requiredIngredients = {};
   bool _showRecipes = false;
   bool _hasIngredients = false;
@@ -664,7 +659,6 @@ class _RecipePageState extends State<RecipePage> with WidgetsBindingObserver {
         hasIngredients: _hasIngredients,
       )
           : IngredientSelector(
-        // ... (deine IngredientSelector-Eigenschaften bleiben gleich) ...
         vegetablesMap: _vegetablesMap.map((key, entries) {
           double totalQuantity = _getIngredientTotalQuantity(key, 'Vegetables');
           String unit = _getIngredientUnit(key, 'Vegetables');

@@ -8,7 +8,6 @@ import '../services/scanner.dart';
 import '../data/IngriedientEntry.dart';
 import '../services/inventory_service.dart';
 
-// Define your standard units here
 const List<String> kAppUnits = [
   'g',
   'kg',
@@ -30,7 +29,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
   final TextEditingController _controller = TextEditingController();
   final TextEditingController _quantityController = TextEditingController(text: '1');
   String _selectedUnit = 'piece';
-
+  DateTime _selectedDate = DateTime.now();
   late InventoryService _inventoryService;
 
   Map<String, List<IngredientEntry>> _ingredientCountVegetables = {};
@@ -121,6 +120,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
       setState(() {
         _selectedUnit = 'piece';
         _quantityController.text = '1';
+        _selectedDate = DateTime.now();
       });
     }
     if (_autocompleteController.text != _controller.text) {
@@ -158,7 +158,23 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
       });
     }
   }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      lastDate: DateTime.now(),
+      helpText: 'Select purchase date',
+      cancelText: 'Cancel',
+      confirmText: 'OK',
+    );
 
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+      });
+    }
+  }
   void _addIngredient() async {
     print("IngredientsPage: _addIngredient called.");
     final String ingredient = _controller.text.trim();
@@ -182,7 +198,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
 
     final IngredientEntry newEntry = IngredientEntry(
       name: normalizedIngredient,
-      dateAdded: DateTime.now(),
+      dateAdded: _selectedDate,
       category: category,
       unit: _selectedUnit,
       quantity: quantity,
@@ -200,6 +216,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
           _autocompleteController.clear();
           _quantityController.text = '1';
           _selectedUnit = 'piece';
+          _selectedDate = DateTime.now(); // Hinzufügen
           FocusScope.of(context).unfocus();
         });
 
@@ -350,11 +367,9 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
   }
 
 
-// ... (Dein Code vor der Methode _showAdjustQuantityDialog) ...
 
-  // FINAL KORRIGIERTE Methode: _showAdjustQuantityDialog
   Future<void> _showAdjustQuantityDialog(IngredientEntry entryToAdjust, String ingredientKey, String categoryMapKey) async {
-    // Controller wird mit der AKTUELLE MENGE vorbefüllt.
+
     final TextEditingController dialogQuantityController = TextEditingController(
         text: entryToAdjust.quantity.toStringAsFixed(entryToAdjust.quantity.toInt() == entryToAdjust.quantity ? 0 : 1)
     );
@@ -364,7 +379,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          // Titel: "Menge abziehen" oder "Entfernen" passt hier am besten.
+
           title: Text('Remove / Deduct "${entryToAdjust.name}"'),
           content: SingleChildScrollView(
             child: Column(
@@ -392,7 +407,6 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
             ),
             ElevatedButton(
               onPressed: () async {
-                // HIER: Validierung der ABZUZIEHENDEN Menge
                 final double? amountToDeduct = double.tryParse(dialogQuantityController.text.trim());
 
                 if (amountToDeduct == null || amountToDeduct <= 0) {
@@ -401,7 +415,6 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
                   );
                   return;
                 }
-                // HIER: Überprüfen, ob man nicht mehr abziehen will, als vorhanden ist.
                 if (amountToDeduct > entryToAdjust.quantity) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Cannot deduct ${amountToDeduct.toStringAsFixed(amountToDeduct.toInt() == amountToDeduct ? 0 : 1)} ${currentUnit}. Only ${entryToAdjust.quantity.toStringAsFixed(entryToAdjust.quantity.toInt() == entryToAdjust.quantity ? 0 : 1)} ${currentUnit} available.')),
@@ -410,7 +423,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
                 }
                 Navigator.of(context).pop(true);
               },
-              child: const Text('Confirm Deduct'), // Button-Text für Abzug
+              child: const Text('Confirm Deduct'),
             ),
           ],
         );
@@ -418,13 +431,10 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
     );
 
     if (confirmAdjust == true) {
-      // HIER: Die eingegebene Zahl ist die Menge, die ABGEZOGEN werden soll.
       final double amountToDeduct = double.parse(dialogQuantityController.text.trim());
-      // Berechne die neue Restmenge.
       final double newQuantity = entryToAdjust.quantity - amountToDeduct;
 
       try {
-        // Übergib die BERECHNETE NEUE GESAMTMENGE an den InventoryService.
         await _inventoryService.updateIngredientEntryQuantity(ingredientKey, categoryMapKey, entryToAdjust, newQuantity);
         await _loadAllData(); // UI aktualisieren
 
@@ -458,7 +468,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
     dialogQuantityController.dispose();
   }
 
-// ... (Rest deines Codes) ...
+
 
 
 
@@ -608,7 +618,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
                   ),
                   const SizedBox(width: 10),
                   Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: DropdownButtonFormField<String>(
                       value: _selectedUnit,
                       decoration: const InputDecoration(
@@ -626,6 +636,31 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
                           _selectedUnit = newValue!;
                         });
                       },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // Datums-Button
+                  SizedBox(
+                    height: 56,
+                    child: OutlinedButton(
+                      onPressed: () => _selectDate(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.calendar_today, size: 16),
+                          const SizedBox(height: 2),
+                          Text(
+                            DateFormat('MM/dd').format(_selectedDate),
+                            style: const TextStyle(fontSize: 10),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -778,9 +813,9 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
                   _expandedIngredients[key] = !isExpanded;
                 });
               },
-              dense: true, // Macht die ListTile kompakter
+              dense: true,
             ),
-            // Wenn die Zutat aufgeklappt ist, zeige die einzelnen Einträge an
+
             if (isExpanded)
               Column(
                 children: [
@@ -794,7 +829,7 @@ class _IngredientsPageState extends State<IngredientsPage> with WidgetsBindingOb
                           children: [
                             IntrinsicWidth(
                               child: Text(
-                                displayKey, // Hier den Zutaten-Namen anzeigen (könnte auch weggelassen werden, da oben schon genannt)
+                                displayKey,
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                 maxLines: 1,
                               ),

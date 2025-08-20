@@ -53,12 +53,11 @@ class _Recipe2PageState extends State<Recipe2Page> {
   @override
   void initState() {
     super.initState();
-    _selectedModel = 'Qwen/Qwen2.5-72B-Instruct'; // Setze das Standardmodell
+    _selectedModel = 'Qwen/Qwen2.5-72B-Instruct';
     _currentApiEndpointModel = "Qwen/Qwen2.5-72B-Instruct";
-    _loadAllData(); // Eine Methode, die sowohl Einstellungen als auch Inventar lädt
+    _loadAllData();
   }
 
-  // Hilfsmethode, um alle notwendigen Daten beim Start zu laden
   Future<void> _loadAllData() async {
     await _loadSettings();
     await _loadInventory();
@@ -71,7 +70,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
     return null;
   }
 
-  // Helper method to get the total quantity of an ingredient from a specific category
   double _getIngredientTotalQuantity(String ingredientName, String category) {
     List<IngredientEntry>? entries;
     switch (category) {
@@ -88,11 +86,9 @@ class _Recipe2PageState extends State<Recipe2Page> {
         entries = _inventoryService.ingredientCountOthers[ingredientName];
         break;
     }
-    // Sum the quantities of all entries for this ingredient
     return entries?.fold(0.0, (sum, entry) => sum! + entry.quantity) ?? 0.0;
   }
 
-  // Helper method to get the unit of an ingredient from a specific category
   String _getIngredientUnit(String ingredientName, String category) {
     List<IngredientEntry>? entries;
     switch (category) {
@@ -109,7 +105,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
         entries = _inventoryService.ingredientCountOthers[ingredientName];
         break;
     }
-    // Take the unit of the first entry (if available), or 'Stück' as fallback
     return entries?.isNotEmpty == true ? entries!.first.unit : 'Piece';
   }
   Future<void> _loadSettings() async {
@@ -126,7 +121,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
     log('Recipe2Page: Settings saved. AutoExpand: $_autoExpandIngredients');
   }
 
-  // GEÄNDERT: _loadInventory nutzt jetzt den InventoryService und füllt die Map<String, String?>
   Future<void> _loadInventory() async {
     log('Recipe2Page: _loadInventory started (using InventoryService).');
 
@@ -138,7 +132,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
     }
 
     setState(() {
-      // Weise die Inventar-Maps von der Service-Instanz zu und konvertiere für die Anzeige
       _vegetablesMap = _convertIngredientEntryMapToDisplayMap(_inventoryService.ingredientCountVegetables);
       _mainIngredientsMap = _convertIngredientEntryMapToDisplayMap(_inventoryService.ingredientCountMain);
       _spicesMap = _convertIngredientEntryMapToDisplayMap(_inventoryService.ingredientCountSpices);
@@ -150,11 +143,9 @@ class _Recipe2PageState extends State<Recipe2Page> {
     });
   }
 
-  // Hilfsmethode zur Konvertierung von Map<String, List<IngredientEntry>> zu Map<String, String?>
   Map<String, String?> _convertIngredientEntryMapToDisplayMap(Map<String, List<IngredientEntry>> sourceMap) {
     return sourceMap.map((key, value) {
       if (value.isEmpty) return MapEntry(key, null);
-      // Sortiere, um das älteste Datum (falls zutreffend) zu finden, und formatiere es
       value.sort((a, b) => a.dateAdded.compareTo(b.dateAdded));
       return MapEntry(key, DateFormat('MM/dd/yyyy').format(value.first.dateAdded));
     });
@@ -191,21 +182,16 @@ class _Recipe2PageState extends State<Recipe2Page> {
 
   void _onGenerateRecipe() async {
     setState(() {
-      _isShowingRecipeResult = true; // Switch to recipe display
-      _apiResponse = ''; // Reset response on new generation
-      _currentRecipe = null; // Clear old recipe
-      _isCurrentRecipeSaved = false; // Reset save status
+      _isShowingRecipeResult = true;
+      _apiResponse = '';
+      _currentRecipe = null;
+      _isCurrentRecipeSaved = false;
     });
     await _callHuggingFaceApi();
   }
 
-// Füge diese Hilfsfunktion innerhalb deiner _Recipe2PageState Klasse hinzu,
-// idealerweise in der Nähe von _findIngredientCategory, etc.
 
-// Versucht, Menge und Einheit aus einem Ingredient-String zu parsen
   Map<String, dynamic> _parseIngredientAmountAndUnit(String ingredientString) {
-    // Regex um Muster wie "200g", "1 Stk.", "0.5 L", "2.5 kg" zu finden
-    // Erlaubt Dezimalzahlen, optional Leerzeichen, dann Einheit oder "Stk."
     final RegExp regex = RegExp(r'^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|l|stk\.?|el|tl|pckg\.?|prise)?\s*(.*)$', caseSensitive: false);
     final match = regex.firstMatch(ingredientString.trim());
 
@@ -227,19 +213,14 @@ class _Recipe2PageState extends State<Recipe2Page> {
       if (nameRemainder != null && nameRemainder.isNotEmpty) {
         name = nameRemainder.trim();
       } else if (quantityStr != null && unitStr != null && nameRemainder == null) {
-        // Wenn kein Rest da ist, der Originalstring aber Menge/Einheit hat, muss der Name der Originalstring sein
         name = ingredientString.trim();
-        // Hier muss man vorsichtig sein: Wenn der Match den GANZEN String konsumiert hat,
-        // und nur Menge/Einheit übrig lässt, dann ist der Name nicht korrekt extrahiert.
-        // Besser: Der Name ist der Teil nach der Einheit, oder der ganze String, wenn kein Match.
-        // Re-evaluiere den Namen, um Menge/Einheit zu entfernen
+
         name = ingredientString.replaceFirst(RegExp(r'^(\d+(?:[.,]\d+)?)\s*(g|kg|ml|l|stk\.?|el|tl|pckg\.?|prise)?\s*', caseSensitive: false), '').trim();
         if (name.isEmpty && !ingredientString.contains(RegExp(r'\d'))){ // Z.B. "1 Ei" -> name wäre "Ei". Aber wenn "Ei" ohne 1 ist, und regex matcht nicht, ist name "Ei"
           name = ingredientString.trim();
         }
       }
     } else {
-      // Wenn der Regex nichts findet, ist es wahrscheinlich nur der Name, setze Menge auf 1 und Einheit auf "Stück"
       quantity = 1.0;
       unit = 'Stück';
       name = ingredientString.trim();
@@ -260,12 +241,10 @@ class _Recipe2PageState extends State<Recipe2Page> {
       case 'tl':
       case 'pckg':
       case 'prise':
-      // Diese Einheiten bleiben wie sie sind
         break;
       default:
-      // Unbekannte Einheit, behalte sie, aber logge es vielleicht
         log('Unknown unit parsed: $unit for $ingredientString. Defaulting to "Stück".');
-        unit = 'Stück'; // Fallback auf 'Stück' für unbekannte Einheiten
+        unit = 'Stück';
         break;
     }
 
@@ -276,7 +255,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
     };
   }
 
-// ... in _onDeductIngredients
   Future<void> _onDeductIngredients() async {
     if (_currentRecipe == null || _currentRecipe!.usedIngredients.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -286,30 +264,23 @@ class _Recipe2PageState extends State<Recipe2Page> {
       return;
     }
 
-    // Hier wird die Liste der verwendeten Zutaten in parsbare Objekte umgewandelt
     List<Map<String, dynamic>> parsedUsedIngredients =
     _currentRecipe!.usedIngredients.map((s) => _parseIngredientAmountAndUnit(s)).toList();
 
-    // Map für die Mengen, die abgezogen werden sollen (Zutat -> Menge)
     Map<String, double> deductionAmounts = {};
 
-    // Initialisiere Controller und FocusNodes für den Dialog
     Map<String, TextEditingController> _controllers = {};
     Map<String, FocusNode> _focusNodes = {};
 
-    // Stelle sicher, dass das Inventar geladen ist, bevor der Dialog angezeigt wird
     await _inventoryService.loadInventory();
 
-    // Fülle deductionAmounts mit den vorgeschlagenen Werten und erstelle Controller
     for (var parsedIngredient in parsedUsedIngredients) {
       String ingredientName = parsedIngredient['name'];
       double suggestedQuantity = parsedIngredient['quantity'];
-      // String suggestedUnit = parsedIngredient['unit']; // Nicht direkt hier für Controller gebraucht
 
       String? category = _findIngredientCategory(ingredientName);
       if (category != null) {
         double available = _getIngredientTotalQuantity(ingredientName, category);
-        // Vorschlag ist entweder die vorgeschlagene Menge oder die maximal verfügbare Menge, falls Vorschlag größer ist
         double initialDeduction = suggestedQuantity > available && available > 0 ? available : suggestedQuantity;
         if (initialDeduction < 0) initialDeduction = 0.0; // Negative Werte vermeiden
 
@@ -332,7 +303,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
       }
     }
 
-    // Hilfsmethode zum Entsorgen der Controller und FocusNodes
     void disposeControllersAndFocusNodes() {
       _controllers.forEach((key, controller) => controller.dispose());
       _focusNodes.forEach((key, focusNode) => focusNode.dispose());
@@ -473,7 +443,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
       },
     );
 
-    // Controller und FocusNodes entsorgen, nachdem der Dialog geschlossen wurde
     disposeControllersAndFocusNodes();
 
     if (result != null) {
@@ -481,11 +450,7 @@ class _Recipe2PageState extends State<Recipe2Page> {
     }
   }
 
-// KEINE ÄNDERUNG IN _deductIngredientsFromInventory
-// Diese Methode bekommt ja nur die finalen deductionAmounts
-// und die Einheit des Inventars wird bereits vom InventoryService verwaltet.
 
-  // Methode, die den tatsächlichen Abzug im InventoryService durchführt
   Future<void> _deductIngredientsFromInventory(Map<String, double> deductions) async {
     bool inventoryChanged = false;
 
@@ -528,10 +493,9 @@ class _Recipe2PageState extends State<Recipe2Page> {
   }
 
 
-  // NEW: This method parses the raw API response into a Recipe object
+
   Recipe _parseApiResponseToRecipe(String response) {
-    // Remove potential HTML/XML tags at the beginning, as seen in previous examples.
-    // Ensure this is safe and doesn't remove legitimate content.
+
     response = response.split(RegExp(r'<[^>]*>'))[0].trim();
 
     String title = 'Generated Recipe';
@@ -620,7 +584,6 @@ class _Recipe2PageState extends State<Recipe2Page> {
     ingredients = ingredients.where((ingredient) => ingredient.isNotEmpty).toSet().toList();
     directions = directions.where((direction) => direction.isNotEmpty).toList();
 
-    // Fallback for instructions if they were not parsed correctly
     if (directions.isEmpty) {
       String lowerResponse = response.toLowerCase();
       int instructionIndex = -1;
@@ -701,8 +664,8 @@ class _Recipe2PageState extends State<Recipe2Page> {
     setState(() {
       _isLoading = true;
       _apiResponse = '';
-      _currentRecipe = null; // Clear old recipe before generating
-      _isCurrentRecipeSaved = false; // Reset save status
+      _currentRecipe = null;
+      _isCurrentRecipeSaved = false;
     });
     log('Recipe2Page: Generating recipe...');
 
@@ -754,10 +717,10 @@ class _Recipe2PageState extends State<Recipe2Page> {
     final String requiredIngredientsList = _requiredIngredients.join(', ');
     if (_requiredIngredients.isEmpty && _autoExpandIngredients) {
       prompt = """You are a chef creating recipes for beginners.
-TASK: Create ONE complete recipe using only ingredients from the provided list.
+TASK: Create ONE complete recipe using only ingredients from the provided lists.
 RULES:
 1. You MAY use: $ingredientsStr.
-2. The recipe has to be $dietaryRestrictionsStr, ${_selectedCuisineStyle.capitalize()}.
+2. The recipe has to be $dietaryRestrictionsStr, $_selectedCuisineStyle.
 3. Prioritize OLDER Ingredients. TODAY'S DATE: $todayDate.
 4. You are not allowed to use Ingredients I did not mention.
 5. Output EXACTLY in the specified format (no additional text).
@@ -768,12 +731,12 @@ Instructions: 1. [step], 2. [step], 3. [step], ...
 Used Ingredients: [ingredient_name_from_available_list], [ingredient_name_from_available_list], ...""";
     } else if (_requiredIngredients.isNotEmpty && _autoExpandIngredients){
       prompt = """You are a chef creating recipes for beginners.
-TASK: Create ONE complete recipe using only ingredients from the provided list.
+TASK: Create ONE complete recipe using only ingredients from the provided lists.
 RULES:
 1. Use ALL of: $requiredIngredientsList.
 2. You MAY use: $ingredientsStr.
-3. The recipe has to be $dietaryRestrictionsStr, ${_selectedCuisineStyle.capitalize()}.
-3. Prioritize OLDER Ingredients. TODAY'S DATE: $todayDate.
+3. The recipe has to be $dietaryRestrictionsStr, $_selectedCuisineStyle.
+4. Prioritize OLDER Ingredients. TODAY'S DATE: $todayDate.
 5. You are not allowed to use Ingredients I did not mention.
 6. Output EXACTLY in the specified format (no additional text).
 OUTPUT FORMAT (STRICT):
@@ -783,13 +746,13 @@ Instructions: 1. [step], 2. [step], 3. [step], ...
 Used Ingredients: [ingredient_name_from_available_list], [ingredient_name_from_available_list], ...""";
     } else {
   prompt = """You are a chef creating recipes for beginners.
-TASK: Create ONE complete recipe using only ingredients from the provided list.
+TASK: Create ONE complete recipe using only ingredients from the provided lists.
 RULES:
 1. Use ALL of: $requiredIngredientsList.
-3. The recipe has to be $dietaryRestrictionsStr, ${_selectedCuisineStyle.capitalize()}.
+2. The recipe has to be $dietaryRestrictionsStr, $_selectedCuisineStyle.
 3. Prioritize OLDER Ingredients. TODAY'S DATE: $todayDate.
-5. You are not allowed to use Ingredients I did not mention.
-6. Output EXACTLY in the specified format (no additional text).
+4. You are not allowed to use Ingredients I did not mention.
+5. Output EXACTLY in the specified format (no additional text).
 OUTPUT FORMAT (STRICT):
 Title: [recipe name]
 Ingredients: [ingredient1] [quantity] [unit], [ingredient2] [quantity] [unit], ...
@@ -1013,33 +976,33 @@ Used Ingredients: [ingredient_name_from_available_list], [ingredient_name_from_a
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _isShowingRecipeResult ? const Text('Suggestion') : Text('Select ingredients'), // <-- Diese Zeile wurde geändert
+        title: _isShowingRecipeResult ? const Text('Suggestion') : Text('Select ingredients'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        // **Hier ist der "Adjust Ingredients" Button:**
+
         leading: _isShowingRecipeResult && !_isLoading
             ? IconButton(
-          icon: const Icon(Icons.arrow_back), // Das Pfeil-Zurück-Symbol
-          tooltip: 'Adjust Ingredients', // Der Tooltip beim langen Drücken
-          onPressed: _onBackToIngredientSelection, // Die Funktion, die aufgerufen wird
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Adjust Ingredients',
+          onPressed: _onBackToIngredientSelection,
         )
-            : null, // Wenn kein Rezept angezeigt wird, gibt es keinen Leading Button
+            : null,
         actions: _buildAppBarActions(),
       ),
       body: _isShowingRecipeResult
-          ? RecipeDisplay2( // Displays the recipe result
+          ? RecipeDisplay2(
         isLoading: _isLoading,
-        currentRecipe: _currentRecipe, // NEW: Passes the Recipe object
+        currentRecipe: _currentRecipe,
         onGenerateRecipe: _onGenerateRecipe,
         onBackToIngredientSelection: _onBackToIngredientSelection,
-        onDeductIngredients: _onDeductIngredients, // <-- HIER IST DIE VERBINDUNG
+        onDeductIngredients: _onDeductIngredients,
         hasIngredients: _hasIngredients,
-        isCurrentRecipeSaved: _isCurrentRecipeSaved, // NEW: Passes the status
-        onToggleSaveRecipe: _toggleSaveRecipe, // NEW: Passes the callback
+        isCurrentRecipeSaved: _isCurrentRecipeSaved,
+        onToggleSaveRecipe: _toggleSaveRecipe,
       )
-          : RefreshIndicator( // Displays the ingredient selector
+          : RefreshIndicator(
         onRefresh: _onRefreshData,
         child: IngredientSelector2(
           vegetablesMap: _vegetablesMap,
@@ -1051,7 +1014,7 @@ Used Ingredients: [ingredient_name_from_available_list], [ingredient_name_from_a
           onToggleIngredient: _onToggleIngredient,
           onGenerateRecipe: _onGenerateRecipe,
           onToggleAutoExpand: () {
-            _onToggleAutoExpand(!_autoExpandIngredients); // Call with the inverted value
+            _onToggleAutoExpand(!_autoExpandIngredients);
           },
           onResetRequiredIngredients: _onResetRequiredIngredients,
           onRefreshData: _onRefreshData,
