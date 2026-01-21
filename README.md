@@ -1,5 +1,22 @@
-Im Rahmen dieser Bachelorarbeit wurde eine hybride Applikation auf Basis von Dart (Flutter) entwickelt, die anhand einer Zutatenliste Rezepte generiert.
+# KI-basierte Rezeptgenerierung
 
-Für die KI-gestützte Verarbeitung kamen unterschiedliche Integrationsansätze zum Einsatz. Einerseits wurden vortrainierte Sprachmodelle, wie beispielsweise Qwen, direkt über die von Hugging Face bereitgestellte Inference API genutzt. Andererseits wurde für andere Modelle eine eigene REST-API auf Basis von FastAPI implementiert und in einem selbsterstellten Hugging Face Space bereitgestellt, in welcher mehrere Transformer-Modelle serverseitig ausgeführt werden.
+Im Rahmen dieser Bachelorarbeit wurde eine **hybride Applikation auf Basis von Dart (Flutter)** entwickelt, die anhand einer **Zutatenliste automatisch Rezepte generiert**.
 
-Die KI-Modelle werden direkt im Backend geladen und ausgeführt, während die mobile Anwendung ausschließlich über HTTP-Anfragen mit der API kommuniziert. Durch die hybride Entwicklung ist die Anwendung plattformübergreifend und kann auf Android, iOS sowie im Web genutzt werden.
+## KI-gestützte Verarbeitung
+
+Für die Rezeptgenerierung kommen unterschiedliche Integrationsansätze zum Einsatz:
+
+- **Direkte API-Nutzung:** Vortrainierte Sprachmodelle wie **Qwen** werden direkt über die von **Hugging Face bereitgestellte Inference API** angesprochen.  
+- **Eigene REST-API:** Weitere Modelle werden über eine selbst implementierte **REST-API auf Basis von FastAPI** bereitgestellt, die in einem **selbsterstellten Hugging Face Space** mehrere **Transformer-Modelle serverseitig** ausführt.
+
+## Architektur
+
+- Die KI-Modelle werden **direkt im Backend geladen und ausgeführt**.  
+- Die mobile Anwendung kommuniziert ausschließlich über **HTTP-Anfragen** mit der API.  
+- Durch die **hybride Entwicklung** ist die Anwendung **plattformübergreifend** einsetzbar: Android, iOS und Web.
+
+## Features
+
+- Rezeptgenerierung basierend auf einer **Zutatenliste**  
+- Nutzung von **verschiedenen KI-Modellen** je nach Anwendungsfall  
+- **Plattformübergreifend** einsetzbar dank Flutter  
