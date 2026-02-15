@@ -2,6 +2,23 @@
 
 Im Rahmen dieser Bachelorarbeit wurde eine **hybride Applikation auf Basis von Dart (Flutter)** entwickelt, die anhand einer **Zutatenliste automatisch Rezepte generiert**.
 
+
+## Tech Stack
+**Frontend:** Dart & Flutter (Cross-Platform UI für Android, iOS & Web)
+
+**Frontend-Logik:** Lokale Datenhaltung via Shared Preferences (Caching & User Settings)
+
+**Backend:** Python & FastAPI (REST-API zur Steuerung der KI-Logik)
+
+**KI & NLP:** Hugging Face (Transformers-Library, Qwen LLM via Inference API)
+
+**Infrastruktur:** Docker (Containerisierung), Hugging Face Spaces (Cloud-Hosting)
+
+**Kommunikation:** REST (HTTP/JSON) (Anbindung zwischen Mobile-App und Backend)
+
+
+
+
 ## KI-gestützte Verarbeitung
 
 Für die Rezeptgenerierung kommen unterschiedliche Integrationsansätze zum Einsatz:
