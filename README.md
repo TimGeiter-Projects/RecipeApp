@@ -24,7 +24,7 @@ Im Rahmen dieser Bachelorarbeit wurde eine **hybride Applikation auf Basis von D
 Für die Rezeptgenerierung kommen unterschiedliche Integrationsansätze zum Einsatz:
 
 - **Direkte API-Nutzung:** Vortrainierte Sprachmodelle wie **Qwen** werden direkt über die von **Hugging Face bereitgestellte Inference API** angesprochen.  
-- **Eigene REST-API:** Weitere Modelle werden über eine selbst implementierte **REST-API auf Basis von FastAPI** bereitgestellt, die in einem **selbsterstellten Hugging Face Space** mehrere **Transformer-Modelle serverseitig** ausführt.
+- **Eigene REST-API:** Weitere Modelle werden über eine selbst implementierte **REST-API auf Basis von FastAPI** bereitgestellt, die in einem **selbsterstellten Hugging Face Space** mehrere **Transformer-Modelle serverseitig** ausführt (https://huggingface.co/spaces/TimInf/DockerRecipe).
 
 ## Architektur
 
